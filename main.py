@@ -31,3 +31,7 @@ def main():
     line_follower.follow_line_until_crossing()
     drive_base.turn(90)
     line_follower.follow_line_until_crossing()
+
+
+if __name__ == "__main__":
+    main()
