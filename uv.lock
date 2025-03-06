@@ -1,0 +1,23 @@
+version = 1
+revision = 1
+requires-python = ">=3.13"
+
+[[package]]
+name = "pybricks"
+version = "3.5.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/5c/02/476b89b61fbbf5951dfb859c8bd11ea402b4e482fe29aa94a27f014524bf/pybricks-3.5.0.tar.gz", hash = "sha256:cdee23413b41296a7e44d07a04222cebed8115b8ad615e265bec299aa8b5b046", size = 46550 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b6/f0/6e385762d7c8af236f4b73fe83e262887ec04fbb3086025df4fba13d8646/pybricks-3.5.0-py3-none-any.whl", hash = "sha256:950d203e9c6a376ef7a8839b4ccfbab4d330207b35ba4b6ee95ceeeffa27d1e5", size = 57739 },
+]
+
+[[package]]
+name = "robomission2025"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "pybricks" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pybricks", specifier = ">=3.5.0" }]
