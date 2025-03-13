@@ -5,6 +5,7 @@ from pybricks.hubs import EV3Brick
 from pybricks.parameters import Port
 from pybricks.robotics import DriveBase
 
+from lib.grappler import Grappler
 from lib.line_follower import LineFollower
 
 ev3 = EV3Brick()
@@ -13,12 +14,12 @@ motor_left = Motor(Port.D)
 motor_right = Motor(Port.A)
 motor_grab = Motor(Port.C)
 
-drive_base = DriveBase(motor_left, motor_right, wheel_diameter=62.4, axle_track=21.1)
-
 color_left = ColorSensor(Port.S1)
 color_right = ColorSensor(Port.S4)
 
+drive_base = DriveBase(motor_left, motor_right, wheel_diameter=62.4, axle_track=21.1)
 line_follower = LineFollower(motor_left, motor_right, color_left, color_right)
+grappler = Grappler(motor_grab, closed_angle=-90)  # TODO: Check closed angle value
 
 # -----------------------------------------------------------------------------
 
