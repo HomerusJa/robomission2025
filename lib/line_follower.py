@@ -1,7 +1,8 @@
 from time import sleep
-from typing import Tuple
+from typing import Tuple, Union
 
 from pybricks.ev3devices import ColorSensor, Motor
+from pybricks.robotics import DriveBase
 
 SLEEP_INTERVAL = 0.03
 
@@ -16,14 +17,17 @@ class LineFollower:
         right_motor: Motor,
         left_color_sensor: ColorSensor,
         right_color_sensor: ColorSensor,
+        drive_base: Union[DriveBase, None] = None,
         base_speed: int = 100,
         kp: float = 1.0,
         line_threshold: int = 15,
     ):
+        """Initializes the LineFollower object."""
         self.left_motor = left_motor
         self.right_motor = right_motor
         self.left_color_sensor = left_color_sensor
         self.right_color_sensor = right_color_sensor
+        self.drive_base = drive_base
 
         self.base_speed = base_speed
         self.kp = kp
@@ -83,7 +87,7 @@ class LineFollower:
 
         self._stop()
 
-    def follow_line_for_angle(self, angle: int, backwards: bool = False):
+    def follow_line_for_angle(self, angle_deg: int, backwards: bool = False):
         """Follows a line until the two motors have turned a given angle on average.
 
         Args:
@@ -92,7 +96,8 @@ class LineFollower:
         """
         right_start_angle = self.right_motor.angle()
         left_start_angle = self.left_motor.angle()
-        cleaned_angle = -abs(angle) if backwards else abs(angle)
+        # Normalize the angle to be negative when driving backwards and positive otherwise
+        cleaned_angle = -abs(angle_deg) if backwards else abs(angle_deg)
 
         while (
             self.right_motor.angle()
@@ -101,6 +106,17 @@ class LineFollower:
             - left_start_angle
         ) / 2 < cleaned_angle:
             self._tick(backwards)
+            sleep(SLEEP_INTERVAL)
+
+        self._stop()
+
+    def follow_line_for_distance(self, distance_mm: int, backwards: bool = False):
+        """Follow a line for a given distance."""
+        start_distance = self.drive_base.distance()
+
+        while abs(self.drive_base.distance() - start_distance) < distance_mm:
+            self._tick(backwards)
+            sleep(SLEEP_INTERVAL)
 
         self._stop()
 
