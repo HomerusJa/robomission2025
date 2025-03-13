@@ -12,7 +12,7 @@ ev3 = EV3Brick()
 
 motor_left = Motor(Port.D)
 motor_right = Motor(Port.A)
-motor_grab = Motor(Port.C)
+motor_grab = Motor(Port.C, gears=None)  # TODO: Add gears
 
 color_left = ColorSensor(Port.S1)
 color_right = ColorSensor(Port.S4)
@@ -30,8 +30,10 @@ def main():
     line_follower.straight_until_line()
     drive_base.turn(90)
     line_follower.follow_line_until_crossing()
-    drive_base.turn(90)
-    line_follower.follow_line_until_crossing()
+    drive_base.turn(-90)
+    # TODO: Refactor to use distance
+    line_follower.follow_line_for_angle(360, backwards=True)
+    # ...
 
 
 if __name__ == "__main__":
