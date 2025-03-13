@@ -1,8 +1,8 @@
-from time import sleep
 from typing import Tuple, Union
 
 from pybricks.ev3devices import ColorSensor, Motor
 from pybricks.robotics import DriveBase
+from pybricks.tools import wait
 
 SLEEP_INTERVAL = 0.03
 
@@ -70,24 +70,26 @@ class LineFollower:
         self.left_motor.stop()
         self.right_motor.stop()
 
-    def follow_line_for_seconds(self, duration_sec: int = 10, backwards: bool = False):
+    async def follow_line_for_seconds(
+        self, duration_sec: int = 10, backwards: bool = False
+    ):
         """Follows a line for a given duration in seconds."""
 
         for _ in range(duration_sec // SLEEP_INTERVAL):
             self._tick(backwards)
-            sleep(SLEEP_INTERVAL)
+            await wait(SLEEP_INTERVAL)
 
         self._stop()
 
-    def follow_line_until_crossing(self, backwards: bool = False):
+    async def follow_line_until_crossing(self, backwards: bool = False):
         """Follows a line until a crossing is detected."""
         while not self._is_on_line():
             self._tick(backwards)
-            sleep(SLEEP_INTERVAL)
+            await wait(SLEEP_INTERVAL)
 
         self._stop()
 
-    def follow_line_for_angle(self, angle_deg: int, backwards: bool = False):
+    async def follow_line_for_angle(self, angle_deg: int, backwards: bool = False):
         """Follows a line until the two motors have turned a given angle on average.
 
         Args:
@@ -106,26 +108,26 @@ class LineFollower:
             - left_start_angle
         ) / 2 < cleaned_angle:
             self._tick(backwards)
-            sleep(SLEEP_INTERVAL)
+            await wait(SLEEP_INTERVAL)
 
         self._stop()
 
-    def follow_line_for_distance(self, distance_mm: int, backwards: bool = False):
+    async def follow_line_for_distance(self, distance_mm: int, backwards: bool = False):
         """Follow a line for a given distance."""
         start_distance = self.drive_base.distance()
 
         while abs(self.drive_base.distance() - start_distance) < distance_mm:
             self._tick(backwards)
-            sleep(SLEEP_INTERVAL)
+            await wait(SLEEP_INTERVAL)
 
         self._stop()
 
-    def straight_until_line(self, backwards: bool = False):
+    async def straight_until_line(self, backwards: bool = False):
         """Drives straight until a line is detected."""
         self.left_motor.run(-self.base_speed if backwards else self.base_speed)
         self.right_motor.run(-self.base_speed if backwards else self.base_speed)
 
         while not self._is_on_line():
-            sleep(SLEEP_INTERVAL)
+            await wait(SLEEP_INTERVAL)
 
         self._stop()

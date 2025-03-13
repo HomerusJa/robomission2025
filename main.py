@@ -4,7 +4,7 @@ from pybricks.ev3devices import ColorSensor, Motor
 from pybricks.hubs import EV3Brick
 from pybricks.parameters import Port
 from pybricks.robotics import DriveBase
-from pybricks.tools import run_task
+from pybricks.tools import multitask, run_task
 
 from lib.grappler import Grappler
 from lib.line_follower import LineFollower
@@ -21,6 +21,7 @@ motor_ball = Motor(Port.B)
 color_left = ColorSensor(Port.S1)
 color_right = ColorSensor(Port.S4)
 
+# TODO: Verify axle_track
 drive_base = DriveBase(motor_left, motor_right, wheel_diameter=62.4, axle_track=21.1)
 line_follower = LineFollower(
     motor_left, motor_right, color_left, color_right, drive_base
@@ -31,17 +32,20 @@ ball_grabber = Grappler(motor_ball, closed_angle=-90)  # TODO: Check closed angl
 # -----------------------------------------------------------------------------
 
 
-def main():
-    ev3.speaker.beep()
-
-    line_follower.straight_until_line()
-    drive_base.turn(90)
-    line_follower.follow_line_until_crossing()
-    drive_base.turn(-90)
+async def mission() -> None:
+    await line_follower.straight_until_line()
+    await drive_base.turn(90)
+    await line_follower.follow_line_until_crossing()
+    await drive_base.turn(-90)
     # TODO: Check distance
-    line_follower.follow_line_for_distance(500, backwards=True)
+    await line_follower.follow_line_for_distance(500, backwards=True)
     # ...
 
 
+async def main():
+    ev3.speaker.beep()
+    multitask(grappler.initialize(), ball_grabber.initialize(), mission())
+
+
 if __name__ == "__main__":
-    main()
+    run_task(main())

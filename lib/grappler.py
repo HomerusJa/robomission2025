@@ -17,7 +17,7 @@ class Grappler:
         self.motor = motor
         self.closed_angle = closed_angle
 
-    def initialize(self, speed: int = 500):
+    async def initialize(self, speed: int = 500):
         """Initializes the grappler by moving the motor to a known location and
         resetting the angle. This way we always know a rather precisely the
         motors position.
@@ -26,15 +26,15 @@ class Grappler:
             speed (int, optional): The speed at which the motor should move. Defaults to 500 deg/s.
         """
         # TODO: Maybe use Stop.BRAKE instead of Stop.HOLD
-        stop_angle = self.motor.run_until_stalled(speed=speed, then=Stop.HOLD)
+        stop_angle = await self.motor.run_until_stalled(speed=speed, then=Stop.HOLD)
         print(f"Resetting the motor angle from {stop_angle=} to 0.")
         self.motor.reset_angle(0)
 
-    def grab(self, speed: int = 500):
+    async def grab(self, speed: int = 500) -> None:
         """Move the motor to a position where the grappler is closed."""
-        self.motor.run_target(speed, self.closed_angle)
+        await self.motor.run_target(speed, self.closed_angle)
 
-    def release(self):
+    async def release(self, speed: int = 500) -> None:
         """Move the motor to a position where the grappler is open."""
         # FIXME: Maybe don't fully open, also, this overlaps with the initialize method
-        self.motor.run_target(1000, 0)
+        await self.motor.run_target(speed, 0)
